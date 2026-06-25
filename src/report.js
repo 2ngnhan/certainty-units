@@ -1,0 +1,153 @@
+import { certaintyLevel, computeCUMetrics } from './certainty.js'
+
+function levelColor(score) {
+  if (score >= 80) return '#24a148'
+  if (score >= 50) return '#0f62fe'
+  if (score >= 20) return '#f1c21b'
+  return '#da1e28'
+}
+
+function bar(score) {
+  const color = levelColor(score)
+  return `<div style="display:flex;align-items:center;gap:8px">
+    <div style="flex:1;background:#e0e0e0;border-radius:2px;height:6px">
+      <div style="width:${score}%;background:${color};height:6px;border-radius:2px"></div>
+    </div>
+    <span style="font-size:12px;min-width:32px;text-align:right;color:${color};font-weight:600">${score}</span>
+  </div>`
+}
+
+function metricBox(label, value, sub = '') {
+  return `<div style="background:#f4f4f4;border-radius:4px;padding:16px 20px;min-width:130px">
+    <div style="font-size:28px;font-weight:700;color:#161616">${value}</div>
+    <div style="font-size:12px;color:#525252;margin-top:2px">${label}</div>
+    ${sub ? `<div style="font-size:11px;color:#8d8d8d;margin-top:2px">${sub}</div>` : ''}
+  </div>`
+}
+
+function itemRow(item) {
+  const score = item.certainty_score ?? 0
+  const level = certaintyLevel(score)
+  const tierBadge = item.cu_tier
+    ? `<span style="font-size:10px;background:#e0e0e0;padding:2px 6px;border-radius:10px;margin-left:6px">${item.cu_tier}</span>`
+    : ''
+  return `<tr>
+    <td style="padding:10px 12px;border-bottom:1px solid #e0e0e0">
+      <a href="${item.url || '#'}" target="_blank" style="color:#0f62fe;text-decoration:none;font-size:13px">${item.external_id}</a>
+    </td>
+    <td style="padding:10px 12px;border-bottom:1px solid #e0e0e0;font-size:13px;max-width:320px">
+      ${item.title}${tierBadge}
+    </td>
+    <td style="padding:10px 12px;border-bottom:1px solid #e0e0e0;font-size:12px;color:#525252">${item.workflow_status}</td>
+    <td style="padding:10px 12px;border-bottom:1px solid #e0e0e0;font-size:12px;color:#525252">${item.validation_status}</td>
+    <td style="padding:10px 12px;border-bottom:1px solid #e0e0e0;width:160px">${bar(score)}</td>
+    <td style="padding:10px 12px;border-bottom:1px solid #e0e0e0;font-size:12px;color:#525252;text-align:center">
+      <span style="color:${levelColor(score)};font-weight:600">${level}</span>
+    </td>
+  </tr>`
+}
+
+export function generateHTML(items, projectName = 'Project') {
+  const metrics = computeCUMetrics(items)
+  const sorted = [...items].sort((a, b) => (b.certainty_score ?? 0) - (a.certainty_score ?? 0))
+  const now = new Date().toLocaleString()
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Certainty Units — ${projectName}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { font-family: 'IBM Plex Sans', system-ui, sans-serif; background: #fff; color: #161616 }
+  header { background: #161616; color: #fff; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center }
+  header h1 { font-size: 20px; font-weight: 400; letter-spacing: 0.16px }
+  header .meta { font-size: 12px; color: #8d8d8d }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px }
+  .metrics { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px }
+  h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #161616 }
+  table { width: 100%; border-collapse: collapse }
+  th { text-align: left; padding: 8px 12px; font-size: 12px; color: #525252; font-weight: 600; border-bottom: 2px solid #e0e0e0; background: #f4f4f4 }
+  tr:hover td { background: #f4f4f4 }
+  .hill { display: flex; gap: 4px; align-items: flex-end; height: 48px; margin-bottom: 8px }
+  .hill-bar { flex: 1; background: #0f62fe; border-radius: 2px 2px 0 0; opacity: 0.7 }
+  footer { text-align: center; padding: 24px; font-size: 12px; color: #8d8d8d }
+  footer a { color: #8d8d8d }
+</style>
+</head>
+<body>
+<header>
+  <h1>Certainty Units &mdash; ${projectName}</h1>
+  <span class="meta">Generated ${now}</span>
+</header>
+<main>
+  <div class="metrics">
+    ${metricBox('Total items', metrics.totalItems)}
+    ${metricBox('With CU tier', metrics.cuItems)}
+    ${metricBox('Avg certainty', metrics.avgCertaintyScore + '%')}
+    ${metricBox('Completion rate', metrics.completionRate + '%', `${metrics.completedCUValue} / ${metrics.totalCUValue} CU`)}
+    ${metricBox('Integrity score', metrics.integrityScore + '%', 'validated / completed')}
+    ${metricBox('Uphill', metrics.uphill, 'discovery zone')}
+    ${metricBox('Downhill', metrics.downhill, 'execution zone')}
+  </div>
+
+  <h2>Items by certainty score</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Validation</th>
+        <th>Certainty</th>
+        <th>Level</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${sorted.map(itemRow).join('\n')}
+    </tbody>
+  </table>
+</main>
+<footer>
+  Generated by <a href="https://github.com/propozel/certainty-units" target="_blank">certainty-units</a> &mdash; open source
+</footer>
+</body>
+</html>`
+}
+
+export function generateMarkdown(items, projectName = 'Project') {
+  const m = computeCUMetrics(items)
+  const now = new Date().toISOString().slice(0, 10)
+  const sorted = [...items].sort((a, b) => (b.certainty_score ?? 0) - (a.certainty_score ?? 0))
+
+  const rows = sorted.slice(0, 30).map(i => {
+    const score = i.certainty_score ?? 0
+    const level = certaintyLevel(score)
+    return `| ${i.external_id} | ${i.title.slice(0, 50)} | ${i.workflow_status} | ${score} | ${level} |`
+  })
+
+  return `# Certainty Units Report — ${projectName}
+_${now}_
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Total items | ${m.totalItems} |
+| Avg certainty | ${m.avgCertaintyScore}% |
+| Completion rate | ${m.completionRate}% |
+| Integrity score | ${m.integrityScore}% |
+| Uphill (discovery) | ${m.uphill} |
+| Downhill (execution) | ${m.downhill} |
+
+## Items (top 30)
+
+| ID | Title | Status | Score | Level |
+|----|-------|--------|-------|-------|
+${rows.join('\n')}
+
+---
+Generated by [certainty-units](https://github.com/propozel/certainty-units)
+`
+}

@@ -1,0 +1,35 @@
+name: Certainty Units Report
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'   # every Monday at 8am UTC
+  workflow_dispatch:        # also runnable manually
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm install -g certainty-units
+
+      - name: Generate report
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          # JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          # NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+        run: certainty-units sync --json
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          include_files: cu-report.html
