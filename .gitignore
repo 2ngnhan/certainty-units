@@ -1,0 +1,7 @@
+node_modules/
+cu-report.html
+cu-report.md
+cu-data.json
+certainty.config.yaml
+.env
+*.local
