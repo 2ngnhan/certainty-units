@@ -5,15 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>certainty-units — the confidence metric for your project</title>
 <meta name="description" content="Free, open-source certainty scoring for project teams. Connect Linear, Jira, or Notion and get a certainty dashboard in minutes.">
-<meta property="og:title" content="certainty-units">
-<meta property="og:description" content="Velocity tells you how fast. Certainty tells you how sure.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ─────────────────────────────────────────────────────────
-   Propozel Design System — IBM Carbon (Gray 10 + Gray 100)
-   ───────────────────────────────────────────────────────── */
 :root {
   --bg:        #ffffff;
   --layer:     #f4f4f4;
@@ -25,12 +20,10 @@
   --border:    #e0e0e0;
   --border-s:  #8d8d8d;
   --line-dk:   #393939;
-
   --blue:      #0f62fe;
   --blue-dk:   #0043ce;
   --blue-lt:   #edf5ff;
   --blue-on-dk:#78a9ff;
-
   --green:     #24a148;
   --green-lt:  #defbe6;
   --yellow:    #f1c21b;
@@ -38,7 +31,6 @@
   --yellow-dk: #5e4214;
   --red:       #da1e28;
   --red-lt:    #fff1f1;
-
   --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
@@ -58,14 +50,13 @@ body {
 a { color: var(--blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* ── PAGE WRAPPER ─────────────────────────────────────── */
 .page {
   max-width: 1080px;
   margin: 0 auto;
   padding: 2.5rem 2.5rem 6rem;
 }
 
-/* ── RUNNING HEADER ───────────────────────────────────── */
+/* ── Running header ── */
 .running-head {
   display: flex;
   justify-content: space-between;
@@ -80,39 +71,11 @@ a:hover { text-decoration: underline; }
   color: var(--ink3);
   font-weight: 500;
 }
-.running-head .left { display: flex; gap: 2rem; align-items: center; }
-.running-head .dot {
-  width: 8px; height: 8px;
-  background: var(--blue);
-  display: inline-block;
-  border-radius: 50%;
-  margin-right: 0.5rem;
-  vertical-align: middle;
-  animation: pulse 2.4s ease-in-out infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.running-head .tag {
-  background: var(--ink);
-  color: #fff;
-  padding: 4px 10px;
-  font-size: 0.65rem;
-  letter-spacing: 0.16em;
-  font-weight: 500;
-}
-.running-head .gh-link {
-  display: flex; align-items: center; gap: 6px;
-  color: var(--ink3); font-size: 0.72rem; letter-spacing: 0.1em;
-}
-.running-head .gh-link:hover { color: var(--ink); text-decoration: none; }
+.running-head a { color: var(--ink3); }
+.running-head a:hover { color: var(--ink); text-decoration: none; }
 
-/* ── COVER ────────────────────────────────────────────── */
-.cover {
-  margin-bottom: 3.5rem;
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 4rem;
-  align-items: end;
-}
+/* ── Cover ── */
+.cover { margin-bottom: 3.5rem; }
 .cover .kicker {
   font-family: var(--mono);
   font-size: 0.78rem;
@@ -123,29 +86,25 @@ a:hover { text-decoration: underline; }
   font-weight: 500;
 }
 .cover h1 {
-  font-size: clamp(2.6rem, 5vw, 4rem);
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
   font-weight: 300;
   line-height: 1.05;
   letter-spacing: -0.025em;
   color: var(--ink);
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
+  max-width: 22ch;
 }
-.cover h1 em {
-  font-style: normal;
-  color: var(--blue);
-  font-weight: 400;
-}
+.cover h1 em { font-style: normal; color: var(--blue); font-weight: 400; }
 .cover .subtitle {
   font-size: 1.1rem;
   font-weight: 300;
   color: var(--ink2);
   line-height: 1.6;
-  letter-spacing: -0.005em;
   max-width: 44ch;
   margin-bottom: 2rem;
 }
 .cover .subtitle strong { font-weight: 500; color: var(--ink); }
-.cover-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.cover-ctas { display: flex; gap: 12px; }
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--blue); color: #fff;
@@ -156,7 +115,7 @@ a:hover { text-decoration: underline; }
 }
 .btn-primary:hover { background: var(--blue-dk); text-decoration: none; }
 .btn-ghost {
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center;
   border: 1px solid var(--border-s); color: var(--ink2);
   font-family: var(--mono); font-size: 0.74rem; font-weight: 500;
   letter-spacing: 0.12em; text-transform: uppercase;
@@ -164,107 +123,36 @@ a:hover { text-decoration: underline; }
   transition: border-color .15s, color .15s;
 }
 .btn-ghost:hover { border-color: var(--ink); color: var(--ink); text-decoration: none; }
-.cover-side {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  color: var(--ink2);
-  text-transform: uppercase;
-  border-left: 1px solid var(--border);
-  padding-left: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-.cover-side .meta-label {
-  display: block;
-  font-size: 0.6rem;
-  color: var(--ink3);
-  letter-spacing: 0.18em;
-  margin-bottom: 0.25rem;
-  font-weight: 500;
-}
-.cover-side .meta-val {
-  color: var(--ink);
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-}
 
-/* ── HERO TERMINAL (dark .now style) ──────────────────── */
-.hero-now {
+/* ── Terminal ── */
+.terminal {
   background: var(--ink);
-  color: #fff;
-  padding: 2.5rem 2.75rem 2.25rem;
-  margin-bottom: 4.5rem;
+  padding: 2.5rem 2.75rem;
+  margin-bottom: 5rem;
   position: relative;
-  overflow: hidden;
 }
-.hero-now::before {
+.terminal::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
   background: var(--blue);
 }
-.hero-now .now-tag {
+.terminal pre {
   font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--blue-on-dk);
-  font-weight: 500;
-  margin-bottom: 1.5rem;
-  display: inline-flex; align-items: center; gap: 0.6rem;
-}
-.hero-now-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: start;
-}
-.hero-now pre {
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  line-height: 1.9;
+  font-size: 0.88rem;
+  line-height: 2;
   color: #c6c6c6;
-  overflow-x: auto;
 }
-.hero-now pre .cmd  { color: #fff; font-weight: 500; }
-.hero-now pre .dim  { color: var(--ink4); }
-.hero-now pre .hi   { color: var(--green); }
-.hero-now pre .med  { color: var(--blue-on-dk); }
-.hero-now pre .lo   { color: var(--yellow); }
-.hero-now pre .unc  { color: #fa4d56; }
-.hero-now-meta {
-  border-left: 1px solid var(--line-dk);
-  padding-left: 2rem;
-  display: flex; flex-direction: column; gap: 1.25rem;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink4);
-  font-weight: 500;
-}
-.hero-now-meta .m-label {
-  display: block;
-  font-size: 0.6rem;
-  color: var(--blue-on-dk);
-  margin-bottom: 0.3rem;
-  letter-spacing: 0.18em;
-}
-.hero-now-meta .m-val {
-  color: #fff;
-  font-size: 0.85rem;
-  letter-spacing: 0.06em;
-  line-height: 1.4;
-}
+.terminal .cmd  { color: #fff; font-weight: 500; }
+.terminal .dim  { color: var(--ink4); }
+.terminal .hi   { color: var(--green); }
+.terminal .med  { color: var(--blue-on-dk); }
+.terminal .lo   { color: var(--yellow); }
+.terminal .unc  { color: #fa4d56; }
 
-/* ── SECTION RULE ─────────────────────────────────────── */
-.rule { border: none; border-top: 1px solid var(--border); margin: 4rem 0; }
-
-/* ── SECTION HEADER ───────────────────────────────────── */
-.section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
+/* ── Section ── */
+.rule { border: none; border-top: 1px solid var(--border); margin: 4.5rem 0; }
 .section-label {
   font-family: var(--mono);
   font-size: 0.72rem;
@@ -272,14 +160,8 @@ a:hover { text-decoration: underline; }
   text-transform: uppercase;
   color: var(--blue);
   font-weight: 500;
-}
-.section-count {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  color: var(--ink3);
-  text-transform: uppercase;
-  font-weight: 500;
+  margin-bottom: 1.25rem;
+  display: block;
 }
 h2 {
   font-size: 2rem;
@@ -287,29 +169,27 @@ h2 {
   line-height: 1.15;
   letter-spacing: -0.018em;
   color: var(--ink);
-  margin-bottom: 1rem;
-  max-width: 36ch;
+  margin-bottom: 0.75rem;
 }
 .section-sub {
   font-size: 1rem;
   color: var(--ink2);
-  max-width: 56ch;
+  max-width: 54ch;
   line-height: 1.65;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
-/* ── STEPS (how it works) ─────────────────────────────── */
+/* ── Steps ── */
 .steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  margin-bottom: 1rem;
 }
 .step {
   background: var(--bg);
-  padding: 1.75rem 1.75rem 2rem;
+  padding: 2rem 1.75rem;
   display: flex; flex-direction: column; gap: 0.75rem;
   position: relative;
 }
@@ -317,7 +197,7 @@ h2 {
   content: '';
   position: absolute;
   top: 0; left: 0;
-  width: 4px; height: 36px;
+  width: 4px; height: 32px;
   background: var(--blue);
 }
 .step .step-num {
@@ -328,78 +208,64 @@ h2 {
   color: var(--blue);
   font-weight: 500;
 }
-.step h3 {
-  font-size: 1.25rem;
-  font-weight: 500;
-  letter-spacing: -0.012em;
-  line-height: 1.2;
-  color: var(--ink);
-}
-.step p { font-size: 0.9rem; line-height: 1.6; color: var(--ink2); max-width: 100%; margin: 0; }
-.step code { font-family: var(--mono); font-size: 0.8rem; color: var(--blue); background: var(--blue-lt); padding: 1px 5px; }
+.step h3 { font-size: 1.2rem; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); }
+.step p { font-size: 0.9rem; line-height: 1.6; color: var(--ink2); }
+.step code { font-family: var(--mono); font-size: 0.8rem; color: var(--blue); }
 
-/* ── PREVIEW TABLE ────────────────────────────────────── */
-.preview-wrap {
-  background: var(--layer);
-  border: 1px solid var(--border);
-  padding: 2rem 2rem 1.5rem;
-  margin-bottom: 0.5rem;
-}
+/* ── Preview ── */
 .metrics-row {
   display: flex; gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1px;
 }
 .metric-box {
   background: var(--bg);
-  padding: 1rem 1.25rem;
+  padding: 1.1rem 1.25rem;
   flex: 1;
 }
 .metric-box .val {
-  font-size: 1.8rem; font-weight: 600;
+  font-size: 1.75rem; font-weight: 600;
   letter-spacing: -0.02em; color: var(--ink);
-  margin-bottom: 2px;
 }
 .metric-box .lbl {
-  font-family: var(--mono); font-size: 0.62rem;
+  font-family: var(--mono); font-size: 0.6rem;
   letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--ink3); font-weight: 500;
+  color: var(--ink3); font-weight: 500; margin-top: 2px;
 }
 .items-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 .items-table th {
-  text-align: left; padding: 7px 10px;
-  font-family: var(--mono); font-size: 0.62rem;
+  text-align: left; padding: 8px 10px;
+  font-family: var(--mono); font-size: 0.6rem;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--ink3); font-weight: 500;
   border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  border-top: 1px solid var(--border);
 }
-.items-table td { padding: 10px 10px; border-bottom: 1px solid var(--border); background: var(--bg); }
+.items-table td { padding: 11px 10px; border-bottom: 1px solid var(--border); }
 .items-table tr:last-child td { border-bottom: none; }
-.items-table tr:hover td { background: var(--layer); }
 .id-cell { font-family: var(--mono); font-size: 0.8rem; color: var(--blue); }
 .cu-tag {
-  font-family: var(--mono); font-size: 0.6rem;
+  font-family: var(--mono); font-size: 0.58rem;
   letter-spacing: 0.1em; text-transform: uppercase;
   background: var(--layer2); color: var(--ink3);
-  padding: 2px 7px; margin-left: 8px;
+  padding: 2px 6px; margin-left: 8px;
 }
 .bar-wrap { display: flex; align-items: center; gap: 8px; }
-.bar-track { flex: 1; background: var(--layer2); height: 4px; min-width: 80px; }
+.bar-track { flex: 1; background: var(--layer2); height: 4px; }
 .bar-fill { height: 4px; }
-.bar-val { font-family: var(--mono); font-size: 0.75rem; min-width: 26px; text-align: right; font-weight: 600; }
+.bar-val { font-family: var(--mono); font-size: 0.75rem; min-width: 24px; text-align: right; font-weight: 600; }
 .level-tag {
-  font-family: var(--mono); font-size: 0.62rem;
+  font-family: var(--mono); font-size: 0.6rem;
   letter-spacing: 0.1em; text-transform: uppercase;
-  font-weight: 600; padding: 3px 8px;
+  font-weight: 600; padding: 3px 7px;
 }
-.l-high     { color: var(--green); background: var(--green-lt); }
-.l-medium   { color: var(--blue-dk); background: var(--blue-lt); }
-.l-low      { color: var(--yellow-dk); background: var(--yellow-lt); }
-.l-uncertain{ color: var(--red); background: var(--red-lt); }
+.l-high      { color: var(--green);    background: var(--green-lt); }
+.l-medium    { color: var(--blue-dk);  background: var(--blue-lt); }
+.l-low       { color: var(--yellow-dk);background: var(--yellow-lt); }
+.l-uncertain { color: var(--red);      background: var(--red-lt); }
 
-/* ── INTEGRATIONS ─────────────────────────────────────── */
+/* ── Integrations ── */
 .integrations {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -409,8 +275,8 @@ h2 {
 }
 .integration {
   background: var(--bg);
-  padding: 1.5rem 1.25rem 1.65rem;
-  display: flex; flex-direction: column; gap: 0.6rem;
+  padding: 1.5rem 1.25rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
   position: relative;
 }
 .integration::before {
@@ -418,27 +284,19 @@ h2 {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: var(--border-s);
 }
-.integration.ready::before { background: var(--blue); }
-.integration.coming { opacity: 0.45; }
-.integration .int-logo {
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: #fff;
-  margin-bottom: 0.25rem;
-}
-.integration .int-name {
-  font-size: 1rem; font-weight: 500; letter-spacing: -0.01em; color: var(--ink);
-}
+.integration.ready::before  { background: var(--blue); }
+.integration.coming::before { background: var(--border); }
+.integration.coming { opacity: 0.4; }
+.integration .int-name { font-size: 0.95rem; font-weight: 500; color: var(--ink); }
 .integration .int-status {
-  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.14em;
-  text-transform: uppercase; font-weight: 500;
+  font-family: var(--mono); font-size: 0.6rem;
+  letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500;
+  color: var(--ink3);
 }
-.integration.ready  .int-status { color: var(--blue-dk); }
-.integration.coming .int-status { color: var(--ink3); }
+.integration.ready .int-status { color: var(--blue-dk); }
 
-/* ── SIGNALS GRID ─────────────────────────────────────── */
+/* ── Signals ── */
 .signals {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -449,38 +307,29 @@ h2 {
 .signal {
   background: var(--bg);
   padding: 1.75rem;
-  display: flex; flex-direction: column; gap: 0.6rem;
-  position: relative;
-}
-.signal::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 4px; height: 28px;
-  background: var(--blue);
+  display: flex; flex-direction: column; gap: 0.5rem;
 }
 .signal .pts {
   font-family: var(--mono);
-  font-size: 1.5rem; font-weight: 600;
+  font-size: 1.4rem; font-weight: 600;
   color: var(--blue); letter-spacing: -0.02em;
 }
-.signal h4 { font-size: 0.95rem; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); }
-.signal p { font-size: 0.85rem; line-height: 1.55; color: var(--ink2); margin: 0; max-width: 100%; }
-.signal code { font-family: var(--mono); font-size: 0.78rem; color: var(--blue-dk); background: var(--blue-lt); padding: 1px 5px; }
+.signal h4 { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+.signal p { font-size: 0.85rem; line-height: 1.55; color: var(--ink2); }
+.signal code { font-family: var(--mono); font-size: 0.78rem; color: var(--blue-dk); }
 
-/* ── CONFIG CODE BLOCK ────────────────────────────────── */
+/* ── Config ── */
 .code-block {
   background: var(--ink);
   padding: 2rem 2.25rem;
-  margin-top: 1.5rem;
   overflow-x: auto;
 }
 .code-block pre { font-family: var(--mono); font-size: 0.82rem; line-height: 1.9; color: #c6c6c6; }
 .code-block .k { color: var(--blue-on-dk); }
 .code-block .v { color: #42be65; }
-.code-block .c { color: #6f6f6f; }
+.code-block .c { color: #525252; }
 
-/* ── FOOTER ───────────────────────────────────────────── */
+/* ── Footer ── */
 .footer-rule { border: none; border-top: 1px solid var(--ink); margin-top: 5rem; }
 .footer {
   display: flex; justify-content: space-between; align-items: center;
@@ -491,236 +340,150 @@ h2 {
 }
 .footer a { color: var(--ink3); }
 .footer a:hover { color: var(--ink); text-decoration: none; }
-.footer .right { display: flex; gap: 2rem; }
+.footer .links { display: flex; gap: 2rem; }
 
-/* ── RESPONSIVE ───────────────────────────────────────── */
 @media (max-width: 760px) {
   .page { padding: 1.5rem 1.25rem 5rem; }
-  .cover { grid-template-columns: 1fr; gap: 2rem; }
-  .cover-side { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 1.25rem; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; }
-  .hero-now-grid { grid-template-columns: 1fr; }
-  .hero-now-meta { border-left: none; border-top: 1px solid var(--line-dk); padding-left: 0; padding-top: 1.5rem; flex-direction: row; flex-wrap: wrap; }
-  .steps { grid-template-columns: 1fr; }
+  .steps, .signals { grid-template-columns: 1fr; }
   .integrations { grid-template-columns: repeat(2, 1fr); }
-  .signals { grid-template-columns: 1fr 1fr; }
   .metrics-row { flex-wrap: wrap; }
-  .running-head .left { gap: 1rem; }
+  .footer { flex-direction: column; gap: 1rem; align-items: flex-start; }
 }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- Running header -->
   <header class="running-head">
-    <div class="left">
-      <span><span class="dot"></span>certainty-units</span>
-      <span>Open Source · MIT</span>
-      <span class="tag">v0.1</span>
-    </div>
-    <a href="https://github.com/2ngnhan/certainty-units" class="gh-link">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-      GitHub
-    </a>
+    <span>certainty-units · MIT · Free</span>
+    <a href="https://github.com/2ngnhan/certainty-units">GitHub →</a>
   </header>
 
-  <!-- Cover -->
   <section class="cover">
-    <div>
-      <div class="kicker">The confidence metric for your project</div>
-      <h1>Know what your<br>team <em>actually</em> knows.</h1>
-      <p class="subtitle">
-        <strong>Velocity</strong> tells you how fast.<br>
-        <strong>Certainty</strong> tells you how sure.<br>
-        Connect your PM tool and score every work item in minutes.
-      </p>
-      <div class="cover-ctas">
-        <a href="https://github.com/2ngnhan/certainty-units" class="btn-primary">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-          View on GitHub
-        </a>
-        <a href="#how" class="btn-ghost">How it works ↓</a>
-      </div>
-    </div>
-    <div class="cover-side">
-      <div>
-        <span class="meta-label">License</span>
-        <span class="meta-val">MIT · Free forever</span>
-      </div>
-      <div>
-        <span class="meta-label">Integrations</span>
-        <span class="meta-val">Linear · Jira · Notion</span>
-      </div>
-      <div>
-        <span class="meta-label">Output</span>
-        <span class="meta-val">HTML dashboard · Markdown report</span>
-      </div>
-      <div>
-        <span class="meta-label">Setup time</span>
-        <span class="meta-val">Under 2 minutes</span>
-      </div>
+    <div class="kicker">Open source · PM tool integration</div>
+    <h1>Know what your team <em>actually</em> knows.</h1>
+    <p class="subtitle">
+      <strong>Velocity</strong> tells you how fast.<br>
+      <strong>Certainty</strong> tells you how sure.<br>
+      Connect Linear, Jira, or Notion and score every work item in minutes.
+    </p>
+    <div class="cover-ctas">
+      <a href="https://github.com/2ngnhan/certainty-units" class="btn-primary">View on GitHub</a>
+      <a href="#how" class="btn-ghost">How it works ↓</a>
     </div>
   </section>
 
-  <!-- Terminal hero -->
-  <div class="hero-now">
-    <div class="now-tag">
-      <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#78a9ff" opacity="0.4"/><circle cx="5" cy="5" r="3" fill="#78a9ff"/></svg>
-      Quick start
-    </div>
-    <div class="hero-now-grid">
-      <pre
-><span class="dim">$ </span><span class="cmd">npx certainty-units init</span>
+  <div class="terminal">
+    <pre><span class="dim">$ </span><span class="cmd">npx certainty-units init</span>
 <span class="dim">✓ Created certainty.config.yaml</span>
 
 <span class="dim">$ </span><span class="cmd">LINEAR_API_KEY=xxx npx certainty-units sync</span>
 <span class="dim">  42 items fetched. Computing scores…
 ✓ cu-report.html</span>
 
-<span class="hi">high 8</span>  <span class="med">medium 14</span>  <span class="lo">low 12</span>  <span class="unc">uncertain 8</span>
-
-<span class="dim">$ </span><span class="cmd">open cu-report.html</span></pre>
-      <div class="hero-now-meta">
-        <div>
-          <span class="m-label">Command</span>
-          <span class="m-val">npx certainty-units</span>
-        </div>
-        <div>
-          <span class="m-label">No install required</span>
-          <span class="m-val">Runs via npx<br>Node 18+</span>
-        </div>
-        <div>
-          <span class="m-label">Your keys stay local</span>
-          <span class="m-val">No cloud, no account<br>API key in env var only</span>
-        </div>
-        <div>
-          <span class="m-label">Also supports</span>
-          <span class="m-val">GitHub Actions<br>auto-publishes weekly</span>
-        </div>
-      </div>
-    </div>
+<span class="hi">high 8</span>  <span class="med">medium 14</span>  <span class="lo">low 12</span>  <span class="unc">uncertain 8</span></pre>
   </div>
 
-  <!-- How it works -->
   <section id="how">
-    <div class="section-head">
-      <span class="section-label">How it works</span>
-      <span class="section-count">03 steps</span>
-    </div>
+    <span class="section-label">How it works</span>
     <h2>Three commands. One dashboard.</h2>
     <p class="section-sub">No account. No server. Works inside your existing CI pipeline.</p>
-
     <div class="steps">
       <div class="step">
         <div class="step-num">01 · Connect</div>
         <h3>Point at your tool</h3>
-        <p>Run <code>npx certainty-units init</code> to create a config file. Add your API key and team ID — two lines, done.</p>
+        <p>Run <code>npx certainty-units init</code> to generate a config file. Add your API key and team ID.</p>
       </div>
       <div class="step">
         <div class="step-num">02 · Sync</div>
         <h3>Fetch and score</h3>
-        <p>certainty-units pulls every issue, maps your status fields, and computes a 0–100 certainty score from six signals: validation, progress, evidence, criteria, sizing, and discussion.</p>
+        <p>Pulls every issue, maps your status fields, and computes a 0–100 certainty score from six signals.</p>
       </div>
       <div class="step">
         <div class="step-num">03 · Ship</div>
         <h3>Open the report</h3>
-        <p>A self-contained <code>cu-report.html</code> lands in your folder. Open locally, commit to the repo, or auto-publish to GitHub Pages on a schedule.</p>
+        <p>A self-contained <code>cu-report.html</code> in your folder. Open locally or publish to GitHub Pages.</p>
       </div>
     </div>
   </section>
 
   <hr class="rule">
 
-  <!-- Preview -->
   <section>
-    <div class="section-head">
-      <span class="section-label">Output</span>
-      <span class="section-count">Sample report</span>
-    </div>
+    <span class="section-label">Output</span>
     <h2>Your certainty dashboard</h2>
-    <p class="section-sub">A static HTML file — no login, no cloud dependency. Items sorted by certainty, highest to lowest.</p>
+    <p class="section-sub">A static HTML file — no login, no cloud dependency.</p>
 
-    <div class="preview-wrap">
-      <div class="metrics-row">
-        <div class="metric-box"><div class="val">42</div><div class="lbl">Total items</div></div>
-        <div class="metric-box"><div class="val" style="color:var(--blue)">61%</div><div class="lbl">Avg certainty</div></div>
-        <div class="metric-box"><div class="val">74%</div><div class="lbl">Completion</div></div>
-        <div class="metric-box"><div class="val">88%</div><div class="lbl">Integrity</div></div>
-        <div class="metric-box"><div class="val" style="color:var(--yellow-dk)">16</div><div class="lbl">Uphill</div></div>
-        <div class="metric-box"><div class="val" style="color:var(--green)">26</div><div class="lbl">Downhill</div></div>
-      </div>
-      <table class="items-table">
-        <thead>
-          <tr><th>ID</th><th>Title</th><th>Status</th><th>Certainty</th><th>Level</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="id-cell">ENG-12</span></td>
-            <td>Auth flow redesign <span class="cu-tag">advanced</span></td>
-            <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">done</td>
-            <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:95%;background:var(--green)"></div></div><span class="bar-val" style="color:var(--green)">95</span></div></td>
-            <td><span class="level-tag l-high">high</span></td>
-          </tr>
-          <tr>
-            <td><span class="id-cell">ENG-8</span></td>
-            <td>Real-time sync <span class="cu-tag">intermediate</span></td>
-            <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">in progress</td>
-            <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--blue)"></div></div><span class="bar-val" style="color:var(--blue)">67</span></div></td>
-            <td><span class="level-tag l-medium">medium</span></td>
-          </tr>
-          <tr>
-            <td><span class="id-cell">ENG-21</span></td>
-            <td>CSV export</td>
-            <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">in progress</td>
-            <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--yellow)"></div></div><span class="bar-val" style="color:var(--yellow-dk)">35</span></div></td>
-            <td><span class="level-tag l-low">low</span></td>
-          </tr>
-          <tr>
-            <td><span class="id-cell">RES-4</span></td>
-            <td>AI integration research</td>
-            <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">todo</td>
-            <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--red)"></div></div><span class="bar-val" style="color:var(--red)">5</span></div></td>
-            <td><span class="level-tag l-uncertain">uncertain</span></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="metrics-row">
+      <div class="metric-box"><div class="val">42</div><div class="lbl">Total items</div></div>
+      <div class="metric-box"><div class="val" style="color:var(--blue)">61%</div><div class="lbl">Avg certainty</div></div>
+      <div class="metric-box"><div class="val">74%</div><div class="lbl">Completion</div></div>
+      <div class="metric-box"><div class="val">88%</div><div class="lbl">Integrity</div></div>
+      <div class="metric-box"><div class="val" style="color:var(--yellow-dk)">16</div><div class="lbl">Uphill</div></div>
+      <div class="metric-box"><div class="val" style="color:var(--green)">26</div><div class="lbl">Downhill</div></div>
     </div>
+
+    <table class="items-table">
+      <thead>
+        <tr><th>ID</th><th>Title</th><th>Status</th><th>Certainty</th><th>Level</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="id-cell">ENG-12</span></td>
+          <td>Auth flow redesign <span class="cu-tag">advanced</span></td>
+          <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">done</td>
+          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:95%;background:var(--green)"></div></div><span class="bar-val" style="color:var(--green)">95</span></div></td>
+          <td><span class="level-tag l-high">high</span></td>
+        </tr>
+        <tr>
+          <td><span class="id-cell">ENG-8</span></td>
+          <td>Real-time sync <span class="cu-tag">intermediate</span></td>
+          <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">in progress</td>
+          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--blue)"></div></div><span class="bar-val" style="color:var(--blue)">67</span></div></td>
+          <td><span class="level-tag l-medium">medium</span></td>
+        </tr>
+        <tr>
+          <td><span class="id-cell">ENG-21</span></td>
+          <td>CSV export</td>
+          <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">in progress</td>
+          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--yellow)"></div></div><span class="bar-val" style="color:var(--yellow-dk)">35</span></div></td>
+          <td><span class="level-tag l-low">low</span></td>
+        </tr>
+        <tr>
+          <td><span class="id-cell">RES-4</span></td>
+          <td>AI integration research</td>
+          <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">todo</td>
+          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--red)"></div></div><span class="bar-val" style="color:var(--red)">5</span></div></td>
+          <td><span class="level-tag l-uncertain">uncertain</span></td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 
   <hr class="rule">
 
-  <!-- Integrations -->
   <section id="integrations">
-    <div class="section-head">
-      <span class="section-label">Integrations</span>
-      <span class="section-count">3 ready · 2 coming</span>
-    </div>
+    <span class="section-label">Integrations</span>
     <h2>Connects where your team works</h2>
-    <p class="section-sub">One config file. Works with the tool you already use. Field names don't match? Override them in YAML — no code.</p>
-
+    <p class="section-sub">One config file. Field names don't match? Override them in YAML — no code.</p>
     <div class="integrations">
       <div class="integration ready">
-        <div class="int-logo" style="background:#5e6ad2">L</div>
         <div class="int-name">Linear</div>
         <div class="int-status">Ready</div>
       </div>
       <div class="integration ready">
-        <div class="int-logo" style="background:#1868db">J</div>
         <div class="int-name">Jira</div>
         <div class="int-status">Ready</div>
       </div>
       <div class="integration ready">
-        <div class="int-logo" style="background:#000">N</div>
         <div class="int-name">Notion</div>
         <div class="int-status">Ready</div>
       </div>
       <div class="integration coming">
-        <div class="int-logo" style="background:#c7384f">M</div>
         <div class="int-name">Monday.com</div>
         <div class="int-status">Coming soon</div>
       </div>
       <div class="integration coming">
-        <div class="int-logo" style="background:#7b68ee">C</div>
         <div class="int-name">ClickUp</div>
         <div class="int-status">Coming soon</div>
       </div>
@@ -729,90 +492,74 @@ h2 {
 
   <hr class="rule">
 
-  <!-- Scoring -->
   <section id="scoring">
-    <div class="section-head">
-      <span class="section-label">Scoring model</span>
-      <span class="section-count">6 signals · 0–100</span>
-    </div>
-    <h2>What goes into a Certainty Score</h2>
-    <p class="section-sub">Six signals, each weighted. The score tells you not just what's done — but what's understood.</p>
-
+    <span class="section-label">Scoring model</span>
+    <h2>Six signals. One score.</h2>
+    <p class="section-sub">The certainty score tells you not just what's done — but what's understood.</p>
     <div class="signals">
       <div class="signal">
         <div class="pts">40 pts</div>
         <h4>Validation status</h4>
-        <p><code>validated</code> → 40 · <code>assumed</code> → 10 · <code>needs_clarification</code> → 5</p>
+        <p><code>validated</code> → 40 · <code>assumed</code> → 10</p>
       </div>
       <div class="signal">
         <div class="pts">20 pts</div>
         <h4>Workflow progress</h4>
-        <p><code>done</code> → 20 · <code>review</code> → 15 · <code>in_progress</code> → 10</p>
+        <p><code>done</code> → 20 · <code>in_progress</code> → 10</p>
       </div>
       <div class="signal">
         <div class="pts">10 pts</div>
         <h4>Acceptance criteria</h4>
-        <p>Item has a clear definition of done — someone thought through what "finished" means.</p>
+        <p>Item has a clear definition of done.</p>
       </div>
       <div class="signal">
         <div class="pts">10 pts</div>
         <h4>CU tier set</h4>
-        <p><code>basic</code> · <code>intermediate</code> · <code>advanced</code> — signals deliberate sizing by the team.</p>
+        <p><code>basic</code> · <code>intermediate</code> · <code>advanced</code></p>
       </div>
       <div class="signal">
         <div class="pts">5 pts</div>
-        <h4>Evidence / description</h4>
-        <p>Non-empty description — the team wrote something down about the item.</p>
+        <h4>Evidence</h4>
+        <p>Non-empty description field.</p>
       </div>
       <div class="signal">
         <div class="pts">+15 pts</div>
-        <h4>Discussion activity</h4>
-        <p>Comment count × 5, capped at 15. Discussed items carry less hidden risk.</p>
+        <h4>Discussion</h4>
+        <p>Comment count × 5, capped at 15.</p>
       </div>
     </div>
   </section>
 
   <hr class="rule">
 
-  <!-- Config -->
   <section>
-    <div class="section-head">
-      <span class="section-label">Configuration</span>
-    </div>
+    <span class="section-label">Configuration</span>
     <h2>Field mapping is yours to control</h2>
-    <p class="section-sub">Your team calls it "Shipped" instead of "done"? Map it. One YAML file, no code changes.</p>
-
+    <p class="section-sub">Your team calls it "Shipped" instead of "done"? Map it. One YAML file.</p>
     <div class="code-block">
       <pre><span class="k">project</span>: <span class="v">My Project</span>
-<span class="k">source</span>:  <span class="v">linear</span>   <span class="c"># linear | jira | notion</span>
+<span class="k">source</span>:  <span class="v">linear</span>
 
 <span class="k">linear</span>:
-  <span class="k">apiKey</span>: <span class="v">${LINEAR_API_KEY}</span>   <span class="c"># env var, never committed</span>
+  <span class="k">apiKey</span>: <span class="v">${LINEAR_API_KEY}</span>
   <span class="k">teamId</span>: <span class="v">your-team-id</span>
-
-  <span class="k">fieldMap</span>:               <span class="c"># optional — override defaults</span>
+  <span class="k">fieldMap</span>:
     <span class="k">cu_tier</span>:
-      <span class="k">field</span>: <span class="v">estimate</span>      <span class="c"># map story points to CU tiers</span>
-      <span class="k">map</span>:
-        <span class="k">1</span>: <span class="v">basic</span>
-        <span class="k">3</span>: <span class="v">intermediate</span>
-        <span class="k">8</span>: <span class="v">advanced</span>
+      <span class="k">field</span>: <span class="v">estimate</span>
+      <span class="k">map</span>: { <span class="k">1</span>: <span class="v">basic</span>, <span class="k">3</span>: <span class="v">intermediate</span>, <span class="k">8</span>: <span class="v">advanced</span> }
 
 <span class="k">output</span>:
-  <span class="k">html</span>:     <span class="v">cu-report.html</span>
-  <span class="k">markdown</span>: <span class="v">cu-report.md</span></pre>
+  <span class="k">html</span>: <span class="v">cu-report.html</span></pre>
     </div>
   </section>
 
-  <!-- Footer -->
   <hr class="footer-rule">
   <footer class="footer">
-    <div class="left">certainty-units · Built by <a href="https://propozel.com">Propozel</a></div>
-    <div class="right">
-      <a href="https://github.com/2ngnhan/certainty-units">GitHub</a>
+    <span>certainty-units · Built by <a href="https://propozel.com">Propozel</a></span>
+    <div class="links">
+      <a href="https://github.com/2ngnham/certainty-units">GitHub</a>
       <a href="https://github.com/2ngnhan/certainty-units/blob/main/README.md">Docs</a>
       <a href="https://github.com/2ngnhan/certainty-units/issues">Issues</a>
-      <span>MIT License</span>
     </div>
   </footer>
 
