@@ -3,7 +3,7 @@
 const LINEAR_API = 'https://api.linear.app/graphql'
 
 const ISSUES_QUERY = `
-  query Issues($teamId: String!, $after: String) {
+  query Issues($teamId: ID!, $after: String) {
     issues(
       filter: { team: { id: { eq: $teamId } } }
       first: 100
@@ -20,7 +20,7 @@ const ISSUES_QUERY = `
         state { name type }
         assignee { name }
         labels { nodes { name } }
-        comments { totalCount }
+        comments { nodes { id } }
         createdAt
         updatedAt
         url
@@ -130,7 +130,7 @@ export async function fetchItems(config) {
     novelty_rating:     null,
     complexity_rating:  null,
     dependency_rating:  null,
-    citation_count:     issue.comments?.totalCount ?? 0,
+    citation_count:     issue.comments?.nodes?.length ?? 0,
     assignee:           issue.assignee?.name ?? null,
     labels:             issue.labels?.nodes?.map(l => l.name) ?? [],
     created_at:         issue.createdAt,
