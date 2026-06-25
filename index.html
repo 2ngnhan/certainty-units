@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>certainty-units — the confidence metric for your project</title>
+<meta name="description" content="Free, open-source certainty scoring for project teams. Connect Linear, Jira, or Notion and get a dashboard in 2 minutes.">
+<meta property="og:title" content="certainty-units">
+<meta property="og:description" content="Velocity tells you how fast. Certainty tells you how sure.">
+<meta property="og:type" content="website">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --border: #242424;
+    --text: #e8e8e8;
+    --muted: #666;
+    --accent: #4f8ef7;
+    --high: #22c55e;
+    --medium: #4f8ef7;
+    --low: #f59e0b;
+    --uncertain: #ef4444;
+  }
+  html { scroll-behavior: smooth }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px }
+  a { color: inherit; text-decoration: none }
+  code, pre { font-family: "IBM Plex Mono", "Fira Code", ui-monospace, monospace }
+
+  /* ─── Nav ─── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 32px;
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; color: var(--text) }
+  .nav-logo span { color: var(--accent) }
+  .nav-links { display: flex; align-items: center; gap: 24px }
+  .nav-links a { font-size: 13px; color: var(--muted); transition: color .15s }
+  .nav-links a:hover { color: var(--text) }
+  .nav-gh {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; padding: 6px 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); transition: border-color .15s;
+  }
+  .nav-gh:hover { border-color: var(--muted) }
+
+  /* ─── Hero ─── */
+  .hero { text-align: center; padding: 96px 24px 80px; max-width: 720px; margin: 0 auto }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase;
+    border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; margin-bottom: 32px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--high) }
+  h1 {
+    font-size: clamp(36px, 6vw, 64px); font-weight: 700; line-height: 1.08;
+    letter-spacing: -0.03em; margin-bottom: 24px;
+  }
+  h1 em { font-style: normal; color: var(--accent) }
+  .hero-sub { font-size: 18px; color: var(--muted); line-height: 1.6; margin-bottom: 40px; max-width: 520px; margin-left: auto; margin-right: auto }
+  .hero-sub strong { color: var(--text) }
+
+  /* terminal */
+  .terminal { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; text-align: left; margin-bottom: 36px; overflow: hidden }
+  .terminal-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--border) }
+  .terminal-bar span { width: 11px; height: 11px; border-radius: 50% }
+  .terminal-bar span:nth-child(1) { background: #ff5f57 }
+  .terminal-bar span:nth-child(2) { background: #ffbd2e }
+  .terminal-bar span:nth-child(3) { background: #28c840 }
+  .terminal-bar .t-title { margin-left: auto; font-size: 11px; color: var(--muted) }
+  .terminal pre { padding: 20px 22px; font-size: 13px; line-height: 1.8; color: #ccc; overflow-x: auto }
+  .terminal .cmd { color: #fff }
+  .terminal .dim { color: var(--muted) }
+  .terminal .hi  { color: var(--high) }
+  .terminal .med { color: var(--medium) }
+  .terminal .lo  { color: var(--low) }
+  .terminal .unc { color: var(--uncertain) }
+
+  /* ctas */
+  .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #fff; font-size: 14px; font-weight: 600;
+    padding: 11px 22px; border-radius: 8px; transition: opacity .15s;
+  }
+  .btn-primary:hover { opacity: 0.88 }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; color: var(--muted);
+    padding: 11px 22px; border: 1px solid var(--border); border-radius: 8px;
+    transition: color .15s, border-color .15s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--muted) }
+
+  /* ─── Section wrapper ─── */
+  section { padding: 80px 24px }
+  .container { max-width: 960px; margin: 0 auto }
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 12px }
+  .section-title { font-size: clamp(24px, 4vw, 36px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px }
+  .section-sub { font-size: 16px; color: var(--muted); max-width: 540px; line-height: 1.6 }
+
+  /* ─── Preview (inline report) ─── */
+  .preview-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+  .preview-header { margin-bottom: 28px }
+  .metrics-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px }
+  .metric-box {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 18px; min-width: 110px;
+  }
+  .metric-box .val { font-size: 26px; font-weight: 700; letter-spacing: -0.02em }
+  .metric-box .lbl { font-size: 11px; color: var(--muted); margin-top: 2px }
+  .items-table { width: 100%; border-collapse: collapse; font-size: 13px }
+  .items-table th { text-align: left; padding: 8px 12px; color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border) }
+  .items-table td { padding: 11px 12px; border-bottom: 1px solid #1a1a1a }
+  .items-table tr:last-child td { border-bottom: none }
+  .id-link { color: var(--accent) }
+  .cu-badge { font-size: 10px; background: #242424; padding: 2px 7px; border-radius: 10px; margin-left: 6px; color: var(--muted) }
+  .bar-wrap { display: flex; align-items: center; gap: 8px }
+  .bar-track { flex: 1; background: #242424; border-radius: 2px; height: 5px; min-width: 80px }
+  .bar-fill { height: 5px; border-radius: 2px }
+  .bar-val { font-size: 11px; min-width: 28px; text-align: right; font-weight: 600 }
+  .level-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px }
+  .level-high    { color: var(--high);    background: rgba(34,197,94,.1) }
+  .level-medium  { color: var(--medium);  background: rgba(79,142,247,.1) }
+  .level-low     { color: var(--low);     background: rgba(245,158,11,.1) }
+  .level-uncertain { color: var(--uncertain); background: rgba(239,68,68,.1) }
+  .preview-caption { font-size: 12px; color: var(--muted); margin-top: 16px; text-align: center }
+
+  /* ─── How it works ─── */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 48px }
+  .step { position: relative; padding: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px }
+  .step-num { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.08em; margin-bottom: 14px }
+  .step h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.01em }
+  .step p { font-size: 14px; color: var(--muted); line-height: 1.6 }
+
+  /* ─── Integrations ─── */
+  .integrations { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 40px }
+  .integration {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-weight: 500;
+  }
+  .integration .logo { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff }
+  .integration.coming { opacity: 0.45 }
+  .integration .tag { font-size: 10px; color: var(--muted); margin-left: 4px }
+
+  /* ─── Scoring ─── */
+  .signals { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 40px }
+  .signal { padding: 18px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px }
+  .signal .pts { font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 6px }
+  .signal h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px }
+  .signal p { font-size: 13px; color: var(--muted); line-height: 1.5 }
+
+  /* ─── Config block ─── */
+  .code-block { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 40px }
+  .code-block pre { padding: 24px; font-size: 13px; line-height: 1.8; color: #ccc; overflow-x: auto }
+  .code-block .key { color: #9ab3f5 }
+  .code-block .val { color: #b5e890 }
+  .code-block .cmt { color: var(--muted) }
+
+  /* ─── Footer ─── */
+  footer { border-top: 1px solid var(--border); padding: 40px 24px; text-align: center }
+  .footer-inner { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 16px }
+  .footer-logo { font-size: 15px; font-weight: 600; letter-spacing: -0.02em }
+  .footer-logo span { color: var(--accent) }
+  .footer-links { display: flex; gap: 24px }
+  .footer-links a { font-size: 13px; color: var(--muted); transition: color .15s }
+  .footer-links a:hover { color: var(--text) }
+  .footer-copy { font-size: 12px; color: #444 }
+
+  @media (max-width: 600px) {
+    nav { padding: 14px 18px }
+    .hero { padding: 64px 18px 56px }
+    section { padding: 56px 18px }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a href="/" class="nav-logo"><span>cu</span> · certainty-units</a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#integrations">Integrations</a>
+    <a href="#scoring">Scoring</a>
+    <a href="https://github.com/2ngnhan/certainty-units" class="nav-gh">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    v0.1 &nbsp;·&nbsp; MIT &nbsp;·&nbsp; Free forever
+  </div>
+  <h1>Know what your team<br><em>actually</em> knows.</h1>
+  <p class="hero-sub">
+    Velocity tells you <strong>how fast</strong>.<br>
+    Certainty tells you <strong>how sure</strong>.<br>
+    Connect your PM tool. Score every work item. Ship with confidence.
+  </p>
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span></span><span></span><span></span>
+      <span class="t-title">bash</span>
+    </div>
+    <pre>$ <span class="cmd">npx certainty-units init</span>
+<span class="dim">✓ Created certainty.config.yaml</span>
+
+$ <span class="cmd">LINEAR_API_KEY=xxx npx certainty-units sync</span>
+<span class="dim">  42 items fetched. Computing certainty scores…
+✓ cu-report.html</span>
+
+<span class="hi">high 8</span>  <span class="med">medium 14</span>  <span class="lo">low 12</span>  <span class="unc">uncertain 8</span></pre>
+  </div>
+  <div class="hero-ctas">
+    <a href="https://github.com/2ngnhan/certainty-units" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      View on GitHub
+    </a>
+    <a href="#how" class="btn-ghost">How it works ↓</a>
+  </div>
+</section>
+
+<!-- Preview -->
+<section class="preview-section">
+  <div class="container">
+    <div class="preview-header">
+      <div class="section-label">Live output</div>
+      <div class="section-title">Your report, in 2 minutes</div>
+      <div class="section-sub">A static HTML dashboard — no login, no cloud, open it in any browser or publish to GitHub Pages.</div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-box"><div class="val">42</div><div class="lbl">Total items</div></div>
+      <div class="metric-box"><div class="val" style="color:var(--accent)">61%</div><div class="lbl">Avg certainty</div></div>
+      <div class="metric-box"><div class="val">74%</div><div class="lbl">Completion rate</div></div>
+      <div class="metric-box"><div class="val">88%</div><div class="lbl">Integrity score</div></div>
+      <div class="metric-box"><div class="val" style="color:var(--low)">16</div><div class="lbl">Uphill (discovery)</div></div>
+      <div class="metric-box"><div class="val" style="color:var(--high)">26</div><div class="lbl">Downhill (execution)</div></div>
+    </div>
+
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Title</th><th>Status</th><th>Certainty</th><th>Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="id-link">ENG-12</span></td>
+          <td>Auth flow redesign <span class="cu-badge">advanced</span></td>
+          <td style="color:var(--muted);font-size:12px">done</td>
+          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:95%;background:var(--high)"></div></div><span class="bar-val" style="color:var(--high)">95</span></div></td>
+          <td><span class="level-badge level-high">high</span></td>
+        </tr>
+        <tr>
+          <td><span class="id-link">ENG-8</span></td>
+          <td>Real-time sync <span class="cu-badge">intermediate</span></td>
+          <td style="color:var(--muted);font-size:12px">in_progress</td>
+          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--medium)"></div></div><span class="bar-val" style="color:var(--medium)">67</span></div></td>
+          <td><span class="level-badge level-medium">medium</span></td>
+        </tr>
+        <tr>
+          <td><span class="id-link">ENG-21</span></td>
+          <td>CSV export</td>
+          <td style="color:var(--muted);font-size:12px">in_progress</td>
+          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--low)"></div></div><span class="bar-val" style="color:var(--low)">35</span></div></td>
+          <td><span class="level-badge level-low">low</span></td>
+        </tr>
+        <tr>
+          <td><span class="id-link">RES-4</span></td>
+          <td>AI integration research</td>
+          <td style="color:var(--muted);font-size:12px">todo</td>
+          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--uncertain)"></div></div><span class="bar-val" style="color:var(--uncertain)">5</span></div></td>
+          <td><span class="level-badge level-uncertain">uncertain</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="preview-caption">Items sorted by certainty score — high to low. Click any ID to open in your PM tool.</p>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how">
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <div class="section-title">Three commands. One dashboard.</div>
+    <div class="section-sub">No account. No server. Your API key stays local.</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01 &nbsp;CONNECT</div>
+        <h3>Point at your tool</h3>
+        <p>Run <code style="color:var(--accent);font-size:12px">npx certainty-units init</code> to generate a config file. Add your API key and team ID — that's it.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02 &nbsp;SYNC</div>
+        <h3>Fetch and score</h3>
+        <p>certainty-units pulls every issue, maps your status fields, and computes a 0–100 certainty score based on validation, workflow progress, evidence, and discussion activity.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03 &nbsp;SHIP</div>
+        <h3>Open the report</h3>
+        <p>A self-contained <code style="color:var(--accent);font-size:12px">cu-report.html</code> lands in your project folder. Open it locally, commit it, or auto-publish to GitHub Pages weekly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Integrations -->
+<section id="integrations" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="section-label">Integrations</div>
+    <div class="section-title">Connects to where your team works</div>
+    <div class="section-sub">One config file. Works with the tool you already use.</div>
+    <div class="integrations">
+      <div class="integration">
+        <div class="logo" style="background:#5e6ad2">L</div>
+        Linear
+      </div>
+      <div class="integration">
+        <div class="logo" style="background:#1868db">J</div>
+        Jira
+      </div>
+      <div class="integration">
+        <div class="logo" style="background:#000">N</div>
+        Notion
+      </div>
+      <div class="integration coming">
+        <div class="logo" style="background:#c7384f">M</div>
+        Monday.com
+        <span class="tag">coming</span>
+      </div>
+      <div class="integration coming">
+        <div class="logo" style="background:#7b68ee">C</div>
+        ClickUp
+        <span class="tag">coming</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scoring -->
+<section id="scoring">
+  <div class="container">
+    <div class="section-label">Scoring model</div>
+    <div class="section-title">What goes into a Certainty Score</div>
+    <div class="section-sub">Six signals, each weighted. The score tells you not just what's done — but what's <em>understood</em>.</div>
+    <div class="signals">
+      <div class="signal">
+        <div class="pts">40 pts</div>
+        <h4>Validation status</h4>
+        <p><code>validated</code> → 40 · <code>assumed</code> → 10 · <code>needs_clarification</code> → 5</p>
+      </div>
+      <div class="signal">
+        <div class="pts">20 pts</div>
+        <h4>Workflow progress</h4>
+        <p><code>done</code> → 20 · <code>review</code> → 15 · <code>in_progress</code> → 10</p>
+      </div>
+      <div class="signal">
+        <div class="pts">10 pts</div>
+        <h4>Acceptance criteria</h4>
+        <p>Item has a definition of done — someone thought through what "finished" means.</p>
+      </div>
+      <div class="signal">
+        <div class="pts">10 pts</div>
+        <h4>CU tier set</h4>
+        <p><code>basic</code> / <code>intermediate</code> / <code>advanced</code> — signals deliberate sizing.</p>
+      </div>
+      <div class="signal">
+        <div class="pts">5 pts</div>
+        <h4>Evidence / description</h4>
+        <p>Non-empty description — the team wrote something down about it.</p>
+      </div>
+      <div class="signal">
+        <div class="pts">+15 pts</div>
+        <h4>Discussion activity</h4>
+        <p>Comment count × 5, capped at 15 — discussed items carry less hidden risk.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Config example -->
+<section style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="section-label">Configuration</div>
+    <div class="section-title">Field mapping is yours to control</div>
+    <div class="section-sub">Your team calls it "Shipped" instead of "done"? Map it. One YAML file, zero code.</div>
+    <div class="code-block">
+      <pre><span class="key">project</span><span style="color:#ccc">:</span> <span class="val">My Project</span>
+<span class="key">source</span><span style="color:#ccc">:</span>  <span class="val">linear</span>   <span class="cmt"># linear | jira | notion</span>
+
+<span class="key">linear</span><span style="color:#ccc">:</span>
+  <span class="key">apiKey</span><span style="color:#ccc">:</span> <span class="val">${LINEAR_API_KEY}</span>   <span class="cmt"># env var expanded at runtime</span>
+  <span class="key">teamId</span><span style="color:#ccc">:</span> <span class="val">your-team-id</span>
+
+  <span class="key">fieldMap</span><span style="color:#ccc">:</span>                   <span class="cmt"># optional overrides</span>
+    <span class="key">cu_tier</span><span style="color:#ccc">:</span>
+      <span class="key">field</span><span style="color:#ccc">:</span> <span class="val">estimate</span>
+      <span class="key">map</span><span style="color:#ccc">:</span>
+        <span class="key">1</span><span style="color:#ccc">:</span> <span class="val">basic</span>
+        <span class="key">3</span><span style="color:#ccc">:</span> <span class="val">intermediate</span>
+        <span class="key">8</span><span style="color:#ccc">:</span> <span class="val">advanced</span>
+
+<span class="key">output</span><span style="color:#ccc">:</span>
+  <span class="key">html</span><span style="color:#ccc">:</span>     <span class="val">cu-report.html</span>
+  <span class="key">markdown</span><span style="color:#ccc">:</span> <span class="val">cu-report.md</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo"><span>cu</span> · certainty-units</div>
+    <div class="footer-links">
+      <a href="https://github.com/2ngnhan/certainty-units">GitHub</a>
+      <a href="https://github.com/2ngnhan/certainty-units/blob/main/README.md">Docs</a>
+      <a href="https://github.com/2ngnhan/certainty-units/issues">Issues</a>
+      <a href="https://propozel.com">Built by Propozel</a>
+    </div>
+    <div class="footer-copy">MIT License · Free forever · No account required</div>
+  </div>
+</footer>
+
+</body>
+</html>
