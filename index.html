@@ -2,359 +2,742 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>certainty-units — the confidence metric for your project</title>
-<meta name="description" content="Free, open-source certainty scoring for project teams. Connect Linear, Jira, or Notion and get a dashboard in 2 minutes.">
+<meta name="description" content="Free, open-source certainty scoring for project teams. Connect Linear, Jira, or Notion and get a certainty dashboard in minutes.">
 <meta property="og:title" content="certainty-units">
 <meta property="og:description" content="Velocity tells you how fast. Certainty tells you how sure.">
-<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
-  :root {
-    --bg: #0a0a0a;
-    --surface: #141414;
-    --border: #242424;
-    --text: #e8e8e8;
-    --muted: #666;
-    --accent: #4f8ef7;
-    --high: #22c55e;
-    --medium: #4f8ef7;
-    --low: #f59e0b;
-    --uncertain: #ef4444;
-  }
-  html { scroll-behavior: smooth }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px }
-  a { color: inherit; text-decoration: none }
-  code, pre { font-family: "IBM Plex Mono", "Fira Code", ui-monospace, monospace }
+/* ─────────────────────────────────────────────────────────
+   Propozel Design System — IBM Carbon (Gray 10 + Gray 100)
+   ───────────────────────────────────────────────────────── */
+:root {
+  --bg:        #ffffff;
+  --layer:     #f4f4f4;
+  --layer2:    #ececec;
+  --ink:       #161616;
+  --ink2:      #525252;
+  --ink3:      #6f6f6f;
+  --ink4:      #a8a8a8;
+  --border:    #e0e0e0;
+  --border-s:  #8d8d8d;
+  --line-dk:   #393939;
 
-  /* ─── Nav ─── */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 32px;
-    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; color: var(--text) }
-  .nav-logo span { color: var(--accent) }
-  .nav-links { display: flex; align-items: center; gap: 24px }
-  .nav-links a { font-size: 13px; color: var(--muted); transition: color .15s }
-  .nav-links a:hover { color: var(--text) }
-  .nav-gh {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 13px; padding: 6px 14px;
-    border: 1px solid var(--border); border-radius: 6px;
-    color: var(--text); transition: border-color .15s;
-  }
-  .nav-gh:hover { border-color: var(--muted) }
+  --blue:      #0f62fe;
+  --blue-dk:   #0043ce;
+  --blue-lt:   #edf5ff;
+  --blue-on-dk:#78a9ff;
 
-  /* ─── Hero ─── */
-  .hero { text-align: center; padding: 96px 24px 80px; max-width: 720px; margin: 0 auto }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 12px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase;
-    border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; margin-bottom: 32px;
-  }
-  .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--high) }
-  h1 {
-    font-size: clamp(36px, 6vw, 64px); font-weight: 700; line-height: 1.08;
-    letter-spacing: -0.03em; margin-bottom: 24px;
-  }
-  h1 em { font-style: normal; color: var(--accent) }
-  .hero-sub { font-size: 18px; color: var(--muted); line-height: 1.6; margin-bottom: 40px; max-width: 520px; margin-left: auto; margin-right: auto }
-  .hero-sub strong { color: var(--text) }
+  --green:     #24a148;
+  --green-lt:  #defbe6;
+  --yellow:    #f1c21b;
+  --yellow-lt: #fdf6dd;
+  --yellow-dk: #5e4214;
+  --red:       #da1e28;
+  --red-lt:    #fff1f1;
 
-  /* terminal */
-  .terminal { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; text-align: left; margin-bottom: 36px; overflow: hidden }
-  .terminal-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--border) }
-  .terminal-bar span { width: 11px; height: 11px; border-radius: 50% }
-  .terminal-bar span:nth-child(1) { background: #ff5f57 }
-  .terminal-bar span:nth-child(2) { background: #ffbd2e }
-  .terminal-bar span:nth-child(3) { background: #28c840 }
-  .terminal-bar .t-title { margin-left: auto; font-size: 11px; color: var(--muted) }
-  .terminal pre { padding: 20px 22px; font-size: 13px; line-height: 1.8; color: #ccc; overflow-x: auto }
-  .terminal .cmd { color: #fff }
-  .terminal .dim { color: var(--muted) }
-  .terminal .hi  { color: var(--high) }
-  .terminal .med { color: var(--medium) }
-  .terminal .lo  { color: var(--low) }
-  .terminal .unc { color: var(--uncertain) }
+  --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
 
-  /* ctas */
-  .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap }
-  .btn-primary {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--accent); color: #fff; font-size: 14px; font-weight: 600;
-    padding: 11px 22px; border-radius: 8px; transition: opacity .15s;
-  }
-  .btn-primary:hover { opacity: 0.88 }
-  .btn-ghost {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 14px; color: var(--muted);
-    padding: 11px 22px; border: 1px solid var(--border); border-radius: 8px;
-    transition: color .15s, border-color .15s;
-  }
-  .btn-ghost:hover { color: var(--text); border-color: var(--muted) }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.005em;
+}
+::selection { background: var(--blue); color: #fff; }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-  /* ─── Section wrapper ─── */
-  section { padding: 80px 24px }
-  .container { max-width: 960px; margin: 0 auto }
-  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 12px }
-  .section-title { font-size: clamp(24px, 4vw, 36px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px }
-  .section-sub { font-size: 16px; color: var(--muted); max-width: 540px; line-height: 1.6 }
+/* ── PAGE WRAPPER ─────────────────────────────────────── */
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2.5rem 2.5rem 6rem;
+}
 
-  /* ─── Preview (inline report) ─── */
-  .preview-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-  .preview-header { margin-bottom: 28px }
-  .metrics-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px }
-  .metric-box {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-    padding: 14px 18px; min-width: 110px;
-  }
-  .metric-box .val { font-size: 26px; font-weight: 700; letter-spacing: -0.02em }
-  .metric-box .lbl { font-size: 11px; color: var(--muted); margin-top: 2px }
-  .items-table { width: 100%; border-collapse: collapse; font-size: 13px }
-  .items-table th { text-align: left; padding: 8px 12px; color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border) }
-  .items-table td { padding: 11px 12px; border-bottom: 1px solid #1a1a1a }
-  .items-table tr:last-child td { border-bottom: none }
-  .id-link { color: var(--accent) }
-  .cu-badge { font-size: 10px; background: #242424; padding: 2px 7px; border-radius: 10px; margin-left: 6px; color: var(--muted) }
-  .bar-wrap { display: flex; align-items: center; gap: 8px }
-  .bar-track { flex: 1; background: #242424; border-radius: 2px; height: 5px; min-width: 80px }
-  .bar-fill { height: 5px; border-radius: 2px }
-  .bar-val { font-size: 11px; min-width: 28px; text-align: right; font-weight: 600 }
-  .level-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px }
-  .level-high    { color: var(--high);    background: rgba(34,197,94,.1) }
-  .level-medium  { color: var(--medium);  background: rgba(79,142,247,.1) }
-  .level-low     { color: var(--low);     background: rgba(245,158,11,.1) }
-  .level-uncertain { color: var(--uncertain); background: rgba(239,68,68,.1) }
-  .preview-caption { font-size: 12px; color: var(--muted); margin-top: 16px; text-align: center }
+/* ── RUNNING HEADER ───────────────────────────────────── */
+.running-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--ink);
+  margin-bottom: 4rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  font-weight: 500;
+}
+.running-head .left { display: flex; gap: 2rem; align-items: center; }
+.running-head .dot {
+  width: 8px; height: 8px;
+  background: var(--blue);
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.running-head .tag {
+  background: var(--ink);
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  font-weight: 500;
+}
+.running-head .gh-link {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--ink3); font-size: 0.72rem; letter-spacing: 0.1em;
+}
+.running-head .gh-link:hover { color: var(--ink); text-decoration: none; }
 
-  /* ─── How it works ─── */
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 48px }
-  .step { position: relative; padding: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px }
-  .step-num { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.08em; margin-bottom: 14px }
-  .step h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.01em }
-  .step p { font-size: 14px; color: var(--muted); line-height: 1.6 }
+/* ── COVER ────────────────────────────────────────────── */
+.cover {
+  margin-bottom: 3.5rem;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 4rem;
+  align-items: end;
+}
+.cover .kicker {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+.cover h1 {
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin-bottom: 1.75rem;
+}
+.cover h1 em {
+  font-style: normal;
+  color: var(--blue);
+  font-weight: 400;
+}
+.cover .subtitle {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--ink2);
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  max-width: 44ch;
+  margin-bottom: 2rem;
+}
+.cover .subtitle strong { font-weight: 500; color: var(--ink); }
+.cover-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--blue); color: #fff;
+  font-family: var(--mono); font-size: 0.74rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 20px;
+  transition: background .15s;
+}
+.btn-primary:hover { background: var(--blue-dk); text-decoration: none; }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border-s); color: var(--ink2);
+  font-family: var(--mono); font-size: 0.74rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 20px;
+  transition: border-color .15s, color .15s;
+}
+.btn-ghost:hover { border-color: var(--ink); color: var(--ink); text-decoration: none; }
+.cover-side {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--ink2);
+  text-transform: uppercase;
+  border-left: 1px solid var(--border);
+  padding-left: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.cover-side .meta-label {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--ink3);
+  letter-spacing: 0.18em;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+.cover-side .meta-val {
+  color: var(--ink);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
 
-  /* ─── Integrations ─── */
-  .integrations { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 40px }
-  .integration {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 18px; background: var(--surface);
-    border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-weight: 500;
-  }
-  .integration .logo { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff }
-  .integration.coming { opacity: 0.45 }
-  .integration .tag { font-size: 10px; color: var(--muted); margin-left: 4px }
+/* ── HERO TERMINAL (dark .now style) ──────────────────── */
+.hero-now {
+  background: var(--ink);
+  color: #fff;
+  padding: 2.5rem 2.75rem 2.25rem;
+  margin-bottom: 4.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-now::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--blue);
+}
+.hero-now .now-tag {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue-on-dk);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  display: inline-flex; align-items: center; gap: 0.6rem;
+}
+.hero-now-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+.hero-now pre {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: #c6c6c6;
+  overflow-x: auto;
+}
+.hero-now pre .cmd  { color: #fff; font-weight: 500; }
+.hero-now pre .dim  { color: var(--ink4); }
+.hero-now pre .hi   { color: var(--green); }
+.hero-now pre .med  { color: var(--blue-on-dk); }
+.hero-now pre .lo   { color: var(--yellow); }
+.hero-now pre .unc  { color: #fa4d56; }
+.hero-now-meta {
+  border-left: 1px solid var(--line-dk);
+  padding-left: 2rem;
+  display: flex; flex-direction: column; gap: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  font-weight: 500;
+}
+.hero-now-meta .m-label {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--blue-on-dk);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.18em;
+}
+.hero-now-meta .m-val {
+  color: #fff;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+}
 
-  /* ─── Scoring ─── */
-  .signals { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 40px }
-  .signal { padding: 18px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px }
-  .signal .pts { font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 6px }
-  .signal h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px }
-  .signal p { font-size: 13px; color: var(--muted); line-height: 1.5 }
+/* ── SECTION RULE ─────────────────────────────────────── */
+.rule { border: none; border-top: 1px solid var(--border); margin: 4rem 0; }
 
-  /* ─── Config block ─── */
-  .code-block { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 40px }
-  .code-block pre { padding: 24px; font-size: 13px; line-height: 1.8; color: #ccc; overflow-x: auto }
-  .code-block .key { color: #9ab3f5 }
-  .code-block .val { color: #b5e890 }
-  .code-block .cmt { color: var(--muted) }
+/* ── SECTION HEADER ───────────────────────────────────── */
+.section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue);
+  font-weight: 500;
+}
+.section-count {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--ink3);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+h2 {
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+  margin-bottom: 1rem;
+  max-width: 36ch;
+}
+.section-sub {
+  font-size: 1rem;
+  color: var(--ink2);
+  max-width: 56ch;
+  line-height: 1.65;
+  margin-bottom: 2rem;
+}
 
-  /* ─── Footer ─── */
-  footer { border-top: 1px solid var(--border); padding: 40px 24px; text-align: center }
-  .footer-inner { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 16px }
-  .footer-logo { font-size: 15px; font-weight: 600; letter-spacing: -0.02em }
-  .footer-logo span { color: var(--accent) }
-  .footer-links { display: flex; gap: 24px }
-  .footer-links a { font-size: 13px; color: var(--muted); transition: color .15s }
-  .footer-links a:hover { color: var(--text) }
-  .footer-copy { font-size: 12px; color: #444 }
+/* ── STEPS (how it works) ─────────────────────────────── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+.step {
+  background: var(--bg);
+  padding: 1.75rem 1.75rem 2rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
+  position: relative;
+}
+.step::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 36px;
+  background: var(--blue);
+}
+.step .step-num {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue);
+  font-weight: 500;
+}
+.step h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.step p { font-size: 0.9rem; line-height: 1.6; color: var(--ink2); max-width: 100%; margin: 0; }
+.step code { font-family: var(--mono); font-size: 0.8rem; color: var(--blue); background: var(--blue-lt); padding: 1px 5px; }
 
-  @media (max-width: 600px) {
-    nav { padding: 14px 18px }
-    .hero { padding: 64px 18px 56px }
-    section { padding: 56px 18px }
-  }
+/* ── PREVIEW TABLE ────────────────────────────────────── */
+.preview-wrap {
+  background: var(--layer);
+  border: 1px solid var(--border);
+  padding: 2rem 2rem 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.metrics-row {
+  display: flex; gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+.metric-box {
+  background: var(--bg);
+  padding: 1rem 1.25rem;
+  flex: 1;
+}
+.metric-box .val {
+  font-size: 1.8rem; font-weight: 600;
+  letter-spacing: -0.02em; color: var(--ink);
+  margin-bottom: 2px;
+}
+.metric-box .lbl {
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink3); font-weight: 500;
+}
+.items-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.items-table th {
+  text-align: left; padding: 7px 10px;
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink3); font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.items-table td { padding: 10px 10px; border-bottom: 1px solid var(--border); background: var(--bg); }
+.items-table tr:last-child td { border-bottom: none; }
+.items-table tr:hover td { background: var(--layer); }
+.id-cell { font-family: var(--mono); font-size: 0.8rem; color: var(--blue); }
+.cu-tag {
+  font-family: var(--mono); font-size: 0.6rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--layer2); color: var(--ink3);
+  padding: 2px 7px; margin-left: 8px;
+}
+.bar-wrap { display: flex; align-items: center; gap: 8px; }
+.bar-track { flex: 1; background: var(--layer2); height: 4px; min-width: 80px; }
+.bar-fill { height: 4px; }
+.bar-val { font-family: var(--mono); font-size: 0.75rem; min-width: 26px; text-align: right; font-weight: 600; }
+.level-tag {
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 600; padding: 3px 8px;
+}
+.l-high     { color: var(--green); background: var(--green-lt); }
+.l-medium   { color: var(--blue-dk); background: var(--blue-lt); }
+.l-low      { color: var(--yellow-dk); background: var(--yellow-lt); }
+.l-uncertain{ color: var(--red); background: var(--red-lt); }
+
+/* ── INTEGRATIONS ─────────────────────────────────────── */
+.integrations {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.integration {
+  background: var(--bg);
+  padding: 1.5rem 1.25rem 1.65rem;
+  display: flex; flex-direction: column; gap: 0.6rem;
+  position: relative;
+}
+.integration::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--border-s);
+}
+.integration.ready::before { background: var(--blue); }
+.integration.coming { opacity: 0.45; }
+.integration .int-logo {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: #fff;
+  margin-bottom: 0.25rem;
+}
+.integration .int-name {
+  font-size: 1rem; font-weight: 500; letter-spacing: -0.01em; color: var(--ink);
+}
+.integration .int-status {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.14em;
+  text-transform: uppercase; font-weight: 500;
+}
+.integration.ready  .int-status { color: var(--blue-dk); }
+.integration.coming .int-status { color: var(--ink3); }
+
+/* ── SIGNALS GRID ─────────────────────────────────────── */
+.signals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.signal {
+  background: var(--bg);
+  padding: 1.75rem;
+  display: flex; flex-direction: column; gap: 0.6rem;
+  position: relative;
+}
+.signal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 28px;
+  background: var(--blue);
+}
+.signal .pts {
+  font-family: var(--mono);
+  font-size: 1.5rem; font-weight: 600;
+  color: var(--blue); letter-spacing: -0.02em;
+}
+.signal h4 { font-size: 0.95rem; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); }
+.signal p { font-size: 0.85rem; line-height: 1.55; color: var(--ink2); margin: 0; max-width: 100%; }
+.signal code { font-family: var(--mono); font-size: 0.78rem; color: var(--blue-dk); background: var(--blue-lt); padding: 1px 5px; }
+
+/* ── CONFIG CODE BLOCK ────────────────────────────────── */
+.code-block {
+  background: var(--ink);
+  padding: 2rem 2.25rem;
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+.code-block pre { font-family: var(--mono); font-size: 0.82rem; line-height: 1.9; color: #c6c6c6; }
+.code-block .k { color: var(--blue-on-dk); }
+.code-block .v { color: #42be65; }
+.code-block .c { color: #6f6f6f; }
+
+/* ── FOOTER ───────────────────────────────────────────── */
+.footer-rule { border: none; border-top: 1px solid var(--ink); margin-top: 5rem; }
+.footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink3); font-weight: 500;
+}
+.footer a { color: var(--ink3); }
+.footer a:hover { color: var(--ink); text-decoration: none; }
+.footer .right { display: flex; gap: 2rem; }
+
+/* ── RESPONSIVE ───────────────────────────────────────── */
+@media (max-width: 760px) {
+  .page { padding: 1.5rem 1.25rem 5rem; }
+  .cover { grid-template-columns: 1fr; gap: 2rem; }
+  .cover-side { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 1.25rem; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; }
+  .hero-now-grid { grid-template-columns: 1fr; }
+  .hero-now-meta { border-left: none; border-top: 1px solid var(--line-dk); padding-left: 0; padding-top: 1.5rem; flex-direction: row; flex-wrap: wrap; }
+  .steps { grid-template-columns: 1fr; }
+  .integrations { grid-template-columns: repeat(2, 1fr); }
+  .signals { grid-template-columns: 1fr 1fr; }
+  .metrics-row { flex-wrap: wrap; }
+  .running-head .left { gap: 1rem; }
+}
 </style>
 </head>
 <body>
+<div class="page">
 
-<!-- Nav -->
-<nav>
-  <a href="/" class="nav-logo"><span>cu</span> · certainty-units</a>
-  <div class="nav-links">
-    <a href="#how">How it works</a>
-    <a href="#integrations">Integrations</a>
-    <a href="#scoring">Scoring</a>
-    <a href="https://github.com/2ngnhan/certainty-units" class="nav-gh">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+  <!-- Running header -->
+  <header class="running-head">
+    <div class="left">
+      <span><span class="dot"></span>certainty-units</span>
+      <span>Open Source · MIT</span>
+      <span class="tag">v0.1</span>
+    </div>
+    <a href="https://github.com/2ngnhan/certainty-units" class="gh-link">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
       GitHub
     </a>
-  </div>
-</nav>
+  </header>
 
-<!-- Hero -->
-<section class="hero">
-  <div class="hero-badge">
-    <span class="dot"></span>
-    v0.1 &nbsp;·&nbsp; MIT &nbsp;·&nbsp; Free forever
-  </div>
-  <h1>Know what your team<br><em>actually</em> knows.</h1>
-  <p class="hero-sub">
-    Velocity tells you <strong>how fast</strong>.<br>
-    Certainty tells you <strong>how sure</strong>.<br>
-    Connect your PM tool. Score every work item. Ship with confidence.
-  </p>
-  <div class="terminal">
-    <div class="terminal-bar">
-      <span></span><span></span><span></span>
-      <span class="t-title">bash</span>
+  <!-- Cover -->
+  <section class="cover">
+    <div>
+      <div class="kicker">The confidence metric for your project</div>
+      <h1>Know what your<br>team <em>actually</em> knows.</h1>
+      <p class="subtitle">
+        <strong>Velocity</strong> tells you how fast.<br>
+        <strong>Certainty</strong> tells you how sure.<br>
+        Connect your PM tool and score every work item in minutes.
+      </p>
+      <div class="cover-ctas">
+        <a href="https://github.com/2ngnhan/certainty-units" class="btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+          View on GitHub
+        </a>
+        <a href="#how" class="btn-ghost">How it works ↓</a>
+      </div>
     </div>
-    <pre>$ <span class="cmd">npx certainty-units init</span>
+    <div class="cover-side">
+      <div>
+        <span class="meta-label">License</span>
+        <span class="meta-val">MIT · Free forever</span>
+      </div>
+      <div>
+        <span class="meta-label">Integrations</span>
+        <span class="meta-val">Linear · Jira · Notion</span>
+      </div>
+      <div>
+        <span class="meta-label">Output</span>
+        <span class="meta-val">HTML dashboard · Markdown report</span>
+      </div>
+      <div>
+        <span class="meta-label">Setup time</span>
+        <span class="meta-val">Under 2 minutes</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Terminal hero -->
+  <div class="hero-now">
+    <div class="now-tag">
+      <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#78a9ff" opacity="0.4"/><circle cx="5" cy="5" r="3" fill="#78a9ff"/></svg>
+      Quick start
+    </div>
+    <div class="hero-now-grid">
+      <pre
+><span class="dim">$ </span><span class="cmd">npx certainty-units init</span>
 <span class="dim">✓ Created certainty.config.yaml</span>
 
-$ <span class="cmd">LINEAR_API_KEY=xxx npx certainty-units sync</span>
-<span class="dim">  42 items fetched. Computing certainty scores…
+<span class="dim">$ </span><span class="cmd">LINEAR_API_KEY=xxx npx certainty-units sync</span>
+<span class="dim">  42 items fetched. Computing scores…
 ✓ cu-report.html</span>
 
-<span class="hi">high 8</span>  <span class="med">medium 14</span>  <span class="lo">low 12</span>  <span class="unc">uncertain 8</span></pre>
-  </div>
-  <div class="hero-ctas">
-    <a href="https://github.com/2ngnhan/certainty-units" class="btn-primary">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-      View on GitHub
-    </a>
-    <a href="#how" class="btn-ghost">How it works ↓</a>
-  </div>
-</section>
+<span class="hi">high 8</span>  <span class="med">medium 14</span>  <span class="lo">low 12</span>  <span class="unc">uncertain 8</span>
 
-<!-- Preview -->
-<section class="preview-section">
-  <div class="container">
-    <div class="preview-header">
-      <div class="section-label">Live output</div>
-      <div class="section-title">Your report, in 2 minutes</div>
-      <div class="section-sub">A static HTML dashboard — no login, no cloud, open it in any browser or publish to GitHub Pages.</div>
+<span class="dim">$ </span><span class="cmd">open cu-report.html</span></pre>
+      <div class="hero-now-meta">
+        <div>
+          <span class="m-label">Command</span>
+          <span class="m-val">npx certainty-units</span>
+        </div>
+        <div>
+          <span class="m-label">No install required</span>
+          <span class="m-val">Runs via npx<br>Node 18+</span>
+        </div>
+        <div>
+          <span class="m-label">Your keys stay local</span>
+          <span class="m-val">No cloud, no account<br>API key in env var only</span>
+        </div>
+        <div>
+          <span class="m-label">Also supports</span>
+          <span class="m-val">GitHub Actions<br>auto-publishes weekly</span>
+        </div>
+      </div>
     </div>
-
-    <div class="metrics-row">
-      <div class="metric-box"><div class="val">42</div><div class="lbl">Total items</div></div>
-      <div class="metric-box"><div class="val" style="color:var(--accent)">61%</div><div class="lbl">Avg certainty</div></div>
-      <div class="metric-box"><div class="val">74%</div><div class="lbl">Completion rate</div></div>
-      <div class="metric-box"><div class="val">88%</div><div class="lbl">Integrity score</div></div>
-      <div class="metric-box"><div class="val" style="color:var(--low)">16</div><div class="lbl">Uphill (discovery)</div></div>
-      <div class="metric-box"><div class="val" style="color:var(--high)">26</div><div class="lbl">Downhill (execution)</div></div>
-    </div>
-
-    <table class="items-table">
-      <thead>
-        <tr>
-          <th>ID</th><th>Title</th><th>Status</th><th>Certainty</th><th>Level</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="id-link">ENG-12</span></td>
-          <td>Auth flow redesign <span class="cu-badge">advanced</span></td>
-          <td style="color:var(--muted);font-size:12px">done</td>
-          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:95%;background:var(--high)"></div></div><span class="bar-val" style="color:var(--high)">95</span></div></td>
-          <td><span class="level-badge level-high">high</span></td>
-        </tr>
-        <tr>
-          <td><span class="id-link">ENG-8</span></td>
-          <td>Real-time sync <span class="cu-badge">intermediate</span></td>
-          <td style="color:var(--muted);font-size:12px">in_progress</td>
-          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--medium)"></div></div><span class="bar-val" style="color:var(--medium)">67</span></div></td>
-          <td><span class="level-badge level-medium">medium</span></td>
-        </tr>
-        <tr>
-          <td><span class="id-link">ENG-21</span></td>
-          <td>CSV export</td>
-          <td style="color:var(--muted);font-size:12px">in_progress</td>
-          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--low)"></div></div><span class="bar-val" style="color:var(--low)">35</span></div></td>
-          <td><span class="level-badge level-low">low</span></td>
-        </tr>
-        <tr>
-          <td><span class="id-link">RES-4</span></td>
-          <td>AI integration research</td>
-          <td style="color:var(--muted);font-size:12px">todo</td>
-          <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--uncertain)"></div></div><span class="bar-val" style="color:var(--uncertain)">5</span></div></td>
-          <td><span class="level-badge level-uncertain">uncertain</span></td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="preview-caption">Items sorted by certainty score — high to low. Click any ID to open in your PM tool.</p>
   </div>
-</section>
 
-<!-- How it works -->
-<section id="how">
-  <div class="container">
-    <div class="section-label">How it works</div>
-    <div class="section-title">Three commands. One dashboard.</div>
-    <div class="section-sub">No account. No server. Your API key stays local.</div>
+  <!-- How it works -->
+  <section id="how">
+    <div class="section-head">
+      <span class="section-label">How it works</span>
+      <span class="section-count">03 steps</span>
+    </div>
+    <h2>Three commands. One dashboard.</h2>
+    <p class="section-sub">No account. No server. Works inside your existing CI pipeline.</p>
 
     <div class="steps">
       <div class="step">
-        <div class="step-num">01 &nbsp;CONNECT</div>
+        <div class="step-num">01 · Connect</div>
         <h3>Point at your tool</h3>
-        <p>Run <code style="color:var(--accent);font-size:12px">npx certainty-units init</code> to generate a config file. Add your API key and team ID — that's it.</p>
+        <p>Run <code>npx certainty-units init</code> to create a config file. Add your API key and team ID — two lines, done.</p>
       </div>
       <div class="step">
-        <div class="step-num">02 &nbsp;SYNC</div>
+        <div class="step-num">02 · Sync</div>
         <h3>Fetch and score</h3>
-        <p>certainty-units pulls every issue, maps your status fields, and computes a 0–100 certainty score based on validation, workflow progress, evidence, and discussion activity.</p>
+        <p>certainty-units pulls every issue, maps your status fields, and computes a 0–100 certainty score from six signals: validation, progress, evidence, criteria, sizing, and discussion.</p>
       </div>
       <div class="step">
-        <div class="step-num">03 &nbsp;SHIP</div>
+        <div class="step-num">03 · Ship</div>
         <h3>Open the report</h3>
-        <p>A self-contained <code style="color:var(--accent);font-size:12px">cu-report.html</code> lands in your project folder. Open it locally, commit it, or auto-publish to GitHub Pages weekly.</p>
+        <p>A self-contained <code>cu-report.html</code> lands in your folder. Open locally, commit to the repo, or auto-publish to GitHub Pages on a schedule.</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Integrations -->
-<section id="integrations" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div class="container">
-    <div class="section-label">Integrations</div>
-    <div class="section-title">Connects to where your team works</div>
-    <div class="section-sub">One config file. Works with the tool you already use.</div>
+  <hr class="rule">
+
+  <!-- Preview -->
+  <section>
+    <div class="section-head">
+      <span class="section-label">Output</span>
+      <span class="section-count">Sample report</span>
+    </div>
+    <h2>Your certainty dashboard</h2>
+    <p class="section-sub">A static HTML file — no login, no cloud dependency. Items sorted by certainty, highest to lowest.</p>
+
+    <div class="preview-wrap">
+      <div class="metrics-row">
+        <div class="metric-box"><div class="val">42</div><div class="lbl">Total items</div></div>
+        <div class="metric-box"><div class="val" style="color:var(--blue)">61%</div><div class="lbl">Avg certainty</div></div>
+        <div class="metric-box"><div class="val">74%</div><div class="lbl">Completion</div></div>
+        <div class="metric-box"><div class="val">88%</div><div class="lbl">Integrity</div></div>
+        <div class="metric-box"><div class="val" style="color:var(--yellow-dk)">16</div><div class="lbl">Uphill</div></div>
+        <div class="metric-box"><div class="val" style="color:var(--green)">26</div><div class="lbl">Downhill</div></div>
+      </div>
+      <table class="items-table">
+        <thead>
+          <tr><th>ID</th><th>Title</th><th>Status</th><th>Certainty</th><th>Level</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="id-cell">ENG-12</span></td>
+            <td>Auth flow redesign <span class="cu-tag">advanced</span></td>
+            <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">done</td>
+            <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:95%;background:var(--green)"></div></div><span class="bar-val" style="color:var(--green)">95</span></div></td>
+            <td><span class="level-tag l-high">high</span></td>
+          </tr>
+          <tr>
+            <td><span class="id-cell">ENG-8</span></td>
+            <td>Real-time sync <span class="cu-tag">intermediate</span></td>
+            <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">in progress</td>
+            <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--blue)"></div></div><span class="bar-val" style="color:var(--blue)">67</span></div></td>
+            <td><span class="level-tag l-medium">medium</span></td>
+          </tr>
+          <tr>
+            <td><span class="id-cell">ENG-21</span></td>
+            <td>CSV export</td>
+            <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">in progress</td>
+            <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--yellow)"></div></div><span class="bar-val" style="color:var(--yellow-dk)">35</span></div></td>
+            <td><span class="level-tag l-low">low</span></td>
+          </tr>
+          <tr>
+            <td><span class="id-cell">RES-4</span></td>
+            <td>AI integration research</td>
+            <td style="font-family:var(--mono);font-size:.78rem;color:var(--ink3)">todo</td>
+            <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--red)"></div></div><span class="bar-val" style="color:var(--red)">5</span></div></td>
+            <td><span class="level-tag l-uncertain">uncertain</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- Integrations -->
+  <section id="integrations">
+    <div class="section-head">
+      <span class="section-label">Integrations</span>
+      <span class="section-count">3 ready · 2 coming</span>
+    </div>
+    <h2>Connects where your team works</h2>
+    <p class="section-sub">One config file. Works with the tool you already use. Field names don't match? Override them in YAML — no code.</p>
+
     <div class="integrations">
-      <div class="integration">
-        <div class="logo" style="background:#5e6ad2">L</div>
-        Linear
+      <div class="integration ready">
+        <div class="int-logo" style="background:#5e6ad2">L</div>
+        <div class="int-name">Linear</div>
+        <div class="int-status">Ready</div>
       </div>
-      <div class="integration">
-        <div class="logo" style="background:#1868db">J</div>
-        Jira
+      <div class="integration ready">
+        <div class="int-logo" style="background:#1868db">J</div>
+        <div class="int-name">Jira</div>
+        <div class="int-status">Ready</div>
       </div>
-      <div class="integration">
-        <div class="logo" style="background:#000">N</div>
-        Notion
-      </div>
-      <div class="integration coming">
-        <div class="logo" style="background:#c7384f">M</div>
-        Monday.com
-        <span class="tag">coming</span>
+      <div class="integration ready">
+        <div class="int-logo" style="background:#000">N</div>
+        <div class="int-name">Notion</div>
+        <div class="int-status">Ready</div>
       </div>
       <div class="integration coming">
-        <div class="logo" style="background:#7b68ee">C</div>
-        ClickUp
-        <span class="tag">coming</span>
+        <div class="int-logo" style="background:#c7384f">M</div>
+        <div class="int-name">Monday.com</div>
+        <div class="int-status">Coming soon</div>
+      </div>
+      <div class="integration coming">
+        <div class="int-logo" style="background:#7b68ee">C</div>
+        <div class="int-name">ClickUp</div>
+        <div class="int-status">Coming soon</div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Scoring -->
-<section id="scoring">
-  <div class="container">
-    <div class="section-label">Scoring model</div>
-    <div class="section-title">What goes into a Certainty Score</div>
-    <div class="section-sub">Six signals, each weighted. The score tells you not just what's done — but what's <em>understood</em>.</div>
+  <hr class="rule">
+
+  <!-- Scoring -->
+  <section id="scoring">
+    <div class="section-head">
+      <span class="section-label">Scoring model</span>
+      <span class="section-count">6 signals · 0–100</span>
+    </div>
+    <h2>What goes into a Certainty Score</h2>
+    <p class="section-sub">Six signals, each weighted. The score tells you not just what's done — but what's understood.</p>
+
     <div class="signals">
       <div class="signal">
         <div class="pts">40 pts</div>
@@ -369,69 +752,70 @@ $ <span class="cmd">LINEAR_API_KEY=xxx npx certainty-units sync</span>
       <div class="signal">
         <div class="pts">10 pts</div>
         <h4>Acceptance criteria</h4>
-        <p>Item has a definition of done — someone thought through what "finished" means.</p>
+        <p>Item has a clear definition of done — someone thought through what "finished" means.</p>
       </div>
       <div class="signal">
         <div class="pts">10 pts</div>
         <h4>CU tier set</h4>
-        <p><code>basic</code> / <code>intermediate</code> / <code>advanced</code> — signals deliberate sizing.</p>
+        <p><code>basic</code> · <code>intermediate</code> · <code>advanced</code> — signals deliberate sizing by the team.</p>
       </div>
       <div class="signal">
         <div class="pts">5 pts</div>
         <h4>Evidence / description</h4>
-        <p>Non-empty description — the team wrote something down about it.</p>
+        <p>Non-empty description — the team wrote something down about the item.</p>
       </div>
       <div class="signal">
         <div class="pts">+15 pts</div>
         <h4>Discussion activity</h4>
-        <p>Comment count × 5, capped at 15 — discussed items carry less hidden risk.</p>
+        <p>Comment count × 5, capped at 15. Discussed items carry less hidden risk.</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Config example -->
-<section style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div class="container">
-    <div class="section-label">Configuration</div>
-    <div class="section-title">Field mapping is yours to control</div>
-    <div class="section-sub">Your team calls it "Shipped" instead of "done"? Map it. One YAML file, zero code.</div>
-    <div class="code-block">
-      <pre><span class="key">project</span><span style="color:#ccc">:</span> <span class="val">My Project</span>
-<span class="key">source</span><span style="color:#ccc">:</span>  <span class="val">linear</span>   <span class="cmt"># linear | jira | notion</span>
+  <hr class="rule">
 
-<span class="key">linear</span><span style="color:#ccc">:</span>
-  <span class="key">apiKey</span><span style="color:#ccc">:</span> <span class="val">${LINEAR_API_KEY}</span>   <span class="cmt"># env var expanded at runtime</span>
-  <span class="key">teamId</span><span style="color:#ccc">:</span> <span class="val">your-team-id</span>
-
-  <span class="key">fieldMap</span><span style="color:#ccc">:</span>                   <span class="cmt"># optional overrides</span>
-    <span class="key">cu_tier</span><span style="color:#ccc">:</span>
-      <span class="key">field</span><span style="color:#ccc">:</span> <span class="val">estimate</span>
-      <span class="key">map</span><span style="color:#ccc">:</span>
-        <span class="key">1</span><span style="color:#ccc">:</span> <span class="val">basic</span>
-        <span class="key">3</span><span style="color:#ccc">:</span> <span class="val">intermediate</span>
-        <span class="key">8</span><span style="color:#ccc">:</span> <span class="val">advanced</span>
-
-<span class="key">output</span><span style="color:#ccc">:</span>
-  <span class="key">html</span><span style="color:#ccc">:</span>     <span class="val">cu-report.html</span>
-  <span class="key">markdown</span><span style="color:#ccc">:</span> <span class="val">cu-report.md</span></pre>
+  <!-- Config -->
+  <section>
+    <div class="section-head">
+      <span class="section-label">Configuration</span>
     </div>
-  </div>
-</section>
+    <h2>Field mapping is yours to control</h2>
+    <p class="section-sub">Your team calls it "Shipped" instead of "done"? Map it. One YAML file, no code changes.</p>
 
-<!-- Footer -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-logo"><span>cu</span> · certainty-units</div>
-    <div class="footer-links">
+    <div class="code-block">
+      <pre><span class="k">project</span>: <span class="v">My Project</span>
+<span class="k">source</span>:  <span class="v">linear</span>   <span class="c"># linear | jira | notion</span>
+
+<span class="k">linear</span>:
+  <span class="k">apiKey</span>: <span class="v">${LINEAR_API_KEY}</span>   <span class="c"># env var, never committed</span>
+  <span class="k">teamId</span>: <span class="v">your-team-id</span>
+
+  <span class="k">fieldMap</span>:               <span class="c"># optional — override defaults</span>
+    <span class="k">cu_tier</span>:
+      <span class="k">field</span>: <span class="v">estimate</span>      <span class="c"># map story points to CU tiers</span>
+      <span class="k">map</span>:
+        <span class="k">1</span>: <span class="v">basic</span>
+        <span class="k">3</span>: <span class="v">intermediate</span>
+        <span class="k">8</span>: <span class="v">advanced</span>
+
+<span class="k">output</span>:
+  <span class="k">html</span>:     <span class="v">cu-report.html</span>
+  <span class="k">markdown</span>: <span class="v">cu-report.md</span></pre>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <hr class="footer-rule">
+  <footer class="footer">
+    <div class="left">certainty-units · Built by <a href="https://propozel.com">Propozel</a></div>
+    <div class="right">
       <a href="https://github.com/2ngnhan/certainty-units">GitHub</a>
       <a href="https://github.com/2ngnhan/certainty-units/blob/main/README.md">Docs</a>
       <a href="https://github.com/2ngnhan/certainty-units/issues">Issues</a>
-      <a href="https://propozel.com">Built by Propozel</a>
+      <span>MIT License</span>
     </div>
-    <div class="footer-copy">MIT License · Free forever · No account required</div>
-  </div>
-</footer>
+  </footer>
 
+</div>
 </body>
 </html>
